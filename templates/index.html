@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Example</title>
+</head>
+<body>
+  <h1>WebSocket Example</h1>
+
+  <form id="messageForm" onsubmit="sendMessage(event)">
+    <input type="text" id="messageInput" placeholder="Enter message">
+    <button type="submit">Send</button>
+  </form>
+
+  <ul id="messageList"></ul>
+
+  <script>
+    function log(text, comment) {
+      const li = document.createElement('li');
+      li.textContent = '[' + comment + '] ' + text;
+      document.getElementById('messageList').appendChild(li);
+    }
+
+    const socket = new WebSocket(`wss://${window.location.host}/ws`);
+
+    socket.onopen = function(event) {
+      console.log('WebSocket connection established');
+    };
+
+    socket.onmessage = function(event) {
+      const message = event.data;
+      log(event.data, 'recv');
+    };
+
+    socket.onerror = function (ev) {
+      console.log(ev);
+      log('error', 'error');
+    }
+
+    function sendMessage(event) {
+      event.preventDefault();
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value;
+      socket.send(message);
+      log(message, 'send')
+      messageInput.value = '';
+    }
+  </script>
+</body>
+</html>
